@@ -20,7 +20,5 @@ provider "aws" {
 }
 
 # ECR
-# Lambda
-# API Gateway
 # CloudFront
 # Route 53
