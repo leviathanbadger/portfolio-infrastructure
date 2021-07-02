@@ -20,4 +20,3 @@ provider "aws" {
 }
 
 # ECR
-# Route 53
