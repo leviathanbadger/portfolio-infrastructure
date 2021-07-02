@@ -20,5 +20,4 @@ provider "aws" {
 }
 
 # ECR
-# CloudFront
 # Route 53
