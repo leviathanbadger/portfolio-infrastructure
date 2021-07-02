@@ -16,14 +16,6 @@ data "aws_cloudfront_cache_policy" "managed-cachingdisabled" {
   name = "Managed-CachingDisabled"
 }
 
-# TODO: add cert as resource
-
-data "aws_acm_certificate" "brandonslade-me" {
-  domain = "${var.site_domain_name}" # www.* should also be an "additional name" in the certificate
-  types = ["AMAZON_ISSUED"]
-  most_recent = true
-}
-
 resource "aws_cloudfront_distribution" "brandonslade-me" {
   enabled = true
   is_ipv6_enabled = true
@@ -113,7 +105,7 @@ resource "aws_cloudfront_distribution" "brandonslade-me" {
   }
 
   viewer_certificate {
-    acm_certificate_arn = data.aws_acm_certificate.brandonslade-me.arn
+    acm_certificate_arn = aws_acm_certificate_validation.cert_validation.certificate_arn
     minimum_protocol_version = "TLSv1.2_2019"
     ssl_support_method = "sni-only"
   }
@@ -161,7 +153,7 @@ resource "aws_cloudfront_distribution" "www-brandonslade-me" {
   }
 
   viewer_certificate {
-    acm_certificate_arn = data.aws_acm_certificate.brandonslade-me.arn
+    acm_certificate_arn = aws_acm_certificate_validation.cert_validation.certificate_arn
     minimum_protocol_version = "TLSv1.2_2019"
     ssl_support_method = "sni-only"
   }
