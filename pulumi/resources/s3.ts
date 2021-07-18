@@ -35,6 +35,9 @@ export const primaryBucket = new s3.Bucket(
         }
       }
     }
+  },
+  {
+    deleteBeforeReplace: true
   }
 );
 
@@ -63,7 +66,9 @@ export const primaryBucketPolicy = new s3.BucketPolicy(
     }))
   },
   {
-    parent: primaryBucket
+    parent: primaryBucket,
+    dependsOn: [primaryBucket],
+    deleteBeforeReplace: true
   }
 );
 
@@ -104,6 +109,9 @@ export const wwwRedirectBucket = new s3.Bucket(
         }
       }
     }
+  },
+  {
+    deleteBeforeReplace: true
   }
 );
 
@@ -131,6 +139,8 @@ export const wwwRedirectBucketPolicy = new s3.BucketPolicy(
     }))
   },
   {
-    parent: wwwRedirectBucket
+    parent: wwwRedirectBucket,
+    dependsOn: [wwwRedirectBucket],
+    deleteBeforeReplace: true
   }
 );

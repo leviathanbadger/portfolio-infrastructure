@@ -4,7 +4,7 @@ import { defaultTags } from '../util/default-tags';
 
 const projectsTableName = `${dynamodbTableNamePrefix}${dynamodbTableNameProjects}`;
 export const projectsTable = new dynamodb.Table(
-  'projects-table',
+  projectsTableName,
   {
     name: projectsTableName,
     billingMode: 'PAY_PER_REQUEST',
@@ -16,5 +16,8 @@ export const projectsTable = new dynamodb.Table(
       name: 'Slug',
       type: 'S'
     }]
+  },
+  {
+    deleteBeforeReplace: true
   }
-)
+);
