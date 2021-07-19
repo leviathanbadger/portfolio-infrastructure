@@ -1,22 +1,7 @@
 import { route53, acm } from '@pulumi/aws';
 import { siteDomainName } from '../util/config';
 import { defaultTags } from '../util/default-tags';
-
-const dnsZoneName = `dns/${siteDomainName}/zone`;
-export const dnsZone = new route53.Zone(
-  dnsZoneName,
-  {
-    name: siteDomainName,
-    comment: 'Personal portfolio',
-    forceDestroy: true,
-
-    tags: defaultTags
-  },
-  {
-    deleteBeforeReplace: true,
-    protect: true
-  }
-);
+import { dnsZone } from './dns-zone';
 
 const certificateName = `cert/${siteDomainName}`;
 export const certificate = new acm.Certificate(

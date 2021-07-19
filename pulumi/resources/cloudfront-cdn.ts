@@ -1,10 +1,11 @@
-import { output as pulumiOutput } from '@pulumi/pulumi';
-import { cloudfront } from '@pulumi/aws';
+import { all as pulumiAll, output as pulumiOutput } from '@pulumi/pulumi';
+import { cloudfront, route53 } from '@pulumi/aws';
 import { siteDomainName, region } from '../util/config';
 import { defaultTags } from '../util/default-tags';
 import { apiGatewayProdStage, apiGatewayRestApi } from './api-gateway';
 import { primaryBucket, wwwRedirectBucket } from './s3';
-import { certificate, certificateValidation } from './dns-certs';
+import { certificate, certificateValidation } from './certificate';
+import { dnsZone } from './dns-zone';
 
 const managedCachingOptimizedPolicy = pulumiOutput(cloudfront.getCachePolicy({
   // id = '658327ea-f89d-4fab-a63d-7e88639e58f6'
@@ -182,3 +183,66 @@ export const wwwRedirectCloudfrontDistribution = new cloudfront.Distribution(
     dependsOn: [wwwRedirectBucket, certificate, certificateValidation]
   }
 );
+
+function addCloudfrontDistributionDns(distribution: cloudfront.Distribution, dnsZone: route53.Zone) {
+  const zoneId = dnsZone.zoneId;
+
+  return pulumiAll([distribution.aliases, dnsZone.name]).apply(([aliases, dnsZoneName]) => {
+    if (!aliases) return;
+
+    let records: route53.Record[] = [];
+
+    for (let domainName of aliases) {
+      if (!domainName.endsWith(dnsZoneName)) {
+        throw new Error(`Can't add DNS entries for cloudfront alias "${domainName}". The DNS hosted zone is named "${dnsZoneName}".`);
+      }
+
+      const siteARecord = new route53.Record(
+        `dns/${domainName}/A`,
+        {
+          zoneId,
+          name: domainName,
+          type: 'A',
+
+          aliases: [{
+            evaluateTargetHealth: false,
+            name: distribution.domainName,
+            zoneId: distribution.hostedZoneId
+          }]
+        },
+        {
+          parent: dnsZone,
+          dependsOn: [dnsZone, distribution]
+        }
+      );
+      records.push(siteARecord);
+
+      if (distribution.isIpv6Enabled) {
+        const siteAAAARecord = new route53.Record(
+          `dns/${domainName}/AAAA`,
+          {
+            zoneId,
+            name: domainName,
+            type: 'AAAA',
+
+            aliases: [{
+              evaluateTargetHealth: false,
+              name: distribution.domainName,
+              zoneId: distribution.hostedZoneId
+            }]
+          },
+          {
+            parent: dnsZone,
+            dependsOn: [dnsZone, distribution]
+          }
+        );
+        records.push(siteAAAARecord);
+      }
+    }
+
+    return pulumiOutput(records);
+  });
+}
+
+addCloudfrontDistributionDns(primaryCloudfrontDistribution, dnsZone);
+addCloudfrontDistributionDns(wwwRedirectCloudfrontDistribution, dnsZone);
