@@ -3,7 +3,7 @@ import { PolicyDocument } from '@pulumi/aws/iam';
 import { all } from '@pulumi/pulumi';
 import { lambdaNamePrefix, region, accountId } from '../util/config';
 import { defaultTags } from '../util/default-tags';
-import { projectsTable, houdiniDailyPracticeTable, rustEngineTimelineEntryTable } from './dynamodb';
+import { projectsTable, houdiniDailyPracticeTable, rustEngineTimelineEntriesTable } from './dynamodb';
 
 const lambdaRoleName = `${lambdaNamePrefix}-api-role`;
 export const apiLambdaRole = new iam.Role(
@@ -65,10 +65,13 @@ export const apiLambdaPolicy = new iam.Policy(
             'dynamodb:Scan',
             'dynamodb:Query'
           ],
-          Resource: all([projectsTable.arn, houdiniDailyPracticeTable.arn, rustEngineTimelineEntryTable.arn]).apply((tableArns: string[]) => ([] as string[]).concat(...tableArns.map(arn =>[
-            `${arn}/index/*`,
-            `${arn}`
-          ])))
+          Resource: all([projectsTable.arn, houdiniDailyPracticeTable.arn, rustEngineTimelineEntriesTable.arn])
+            .apply((tableArns: string[]) =>
+              ([] as string[]).concat(...tableArns.map(arn =>[
+                `${arn}/index/*`,
+                `${arn}`
+              ]))
+            )
         }
       ]
     }),

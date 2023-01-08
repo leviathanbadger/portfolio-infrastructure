@@ -1,5 +1,5 @@
 import { dynamodb } from '@pulumi/aws';
-import { dynamodbTableNameHoudiniDailyPractice, dynamodbTableNamePrefix, dynamodbTableNameProjects, dynamodbTableNameRustEngineTimelineEntry } from '../util/config';
+import { dynamodbTableNameHoudiniDailyPractice, dynamodbTableNamePrefix, dynamodbTableNameProjects, dynamodbTableNameRustEngineTimelineEntries } from '../util/config';
 import { defaultTags } from '../util/default-tags';
 
 const projectsTableName = `${dynamodbTableNamePrefix}${dynamodbTableNameProjects}`;
@@ -44,11 +44,11 @@ export const houdiniDailyPracticeTable = new dynamodb.Table(
   }
 );
 
-const rustEngineTimelineEntryTableName = `${dynamodbTableNamePrefix}${dynamodbTableNameRustEngineTimelineEntry}`;
-export const rustEngineTimelineEntryTable = new dynamodb.Table(
-  rustEngineTimelineEntryTableName,
+const rustEngineTimelineEntriesTableName = `${dynamodbTableNamePrefix}${dynamodbTableNameRustEngineTimelineEntries}`;
+export const rustEngineTimelineEntriesTable = new dynamodb.Table(
+  rustEngineTimelineEntriesTableName,
   {
-    name: rustEngineTimelineEntryTableName,
+    name: rustEngineTimelineEntriesTableName,
     billingMode: 'PAY_PER_REQUEST',
     hashKey: 'Id',
 
