@@ -8,6 +8,7 @@ export const siteBucketName = config.get('siteBucketName') ?? 'brandonslade-me';
 export const dynamodbTableNamePrefix = config.get('dynamodbTableNamePrefix') ?? 'Portfolio';
 export const dynamodbTableNameProjects = config.get('dynamodbTableNameProjects') ?? 'Projects';
 export const dynamodbTableNameHoudiniDailyPractice = config.get('dynamodbTableNameHoudiniDailyPractice') ?? 'HoudiniDailyPractices';
+export const dynamodbTableNameRustEngineTimelineEntry = config.get('dynamodbTableNameRustEngineTimelineEntry') ?? 'RustEngineTimelineEntry';
 export const lambdaNamePrefix = config.get('lambdaNamePrefix') ?? 'brandonslade-me';
 export const accountId = config.require('awsAccountId');
 
